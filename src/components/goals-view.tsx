@@ -98,17 +98,17 @@ export default function GoalsView() {
     createGoal.mutate(newGoal);
   };
 
-  const handleAddAmount = (goalId: string, currentAmount: string, addAmount: string) => {
-    const newAmount = parseFloat(currentAmount) + parseFloat(addAmount);
+  const handleAddAmount = (goalId: string, currentAmount: string | null, addAmount: string) => {
+    const newAmount = parseFloat(currentAmount || "0") + parseFloat(addAmount);
     updateGoal.mutate({
       id: goalId,
       data: { currentAmount: newAmount.toString() }
     });
   };
 
-  const getProgressPercentage = (current: string, target: string) => {
-    const currentAmount = parseFloat(current);
-    const targetAmount = parseFloat(target);
+  const getProgressPercentage = (current: string | null, target: string | null) => {
+    const currentAmount = parseFloat(current || "0");
+    const targetAmount = parseFloat(target || "0");
     return targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
   };
 
@@ -240,7 +240,7 @@ export default function GoalsView() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">ความคืบหน้า</span>
                   <span className="font-medium" data-testid={`text-goal-progress-${goal.title.toLowerCase().replace(/ /g, '-')}`}>
-                    ${parseFloat(goal.currentAmount).toFixed(2)} / ${parseFloat(goal.targetAmount).toFixed(2)}
+                    ฿{parseFloat(goal.currentAmount || "0").toFixed(2)} / ฿{parseFloat(goal.targetAmount || "0").toFixed(2)}
                   </span>
                 </div>
                 <Progress value={Math.min(100, progressPercentage)} className="h-3" />
