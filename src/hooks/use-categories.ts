@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Category } from "@shared/schema";
+import type { Category } from "../../shared/schema";
 
 export function useCategories() {
   return useQuery<Category[]>({

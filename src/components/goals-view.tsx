@@ -9,7 +9,7 @@ import { useGoals } from "@/hooks/use-goals";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Goal } from "@shared/schema";
+import { Goal } from "../../shared/schema";
 
 export default function GoalsView() {
   const { data: goals = [] } = useGoals();

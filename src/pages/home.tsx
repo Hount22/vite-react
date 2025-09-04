@@ -8,18 +8,51 @@ import GoalsView from "@/components/goals-view";
 import TransactionModal from "@/components/transaction-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from "@tanstack/react-query";
+import { useCategories } from "@/hooks/use-categories";
+
+// This interface should ideally be in a shared types file
+interface SummaryData {
+  balance: number;
+  totalIncome: number;
+  totalExpenses: number;
+  categoryBreakdown: { [category: string]: number };
+}
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("transactions");
   const isMobile = useIsMobile();
 
+  const { data: categories = [] } = useCategories();
+  const { data: summary, isLoading: isLoadingSummary } = useQuery<SummaryData>({
+    queryKey: ["/api/analytics/summary"],
+  });
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header onNewTransaction={() => setIsModalOpen(true)} />
       
       <div className="flex-1 flex">
-        {!isMobile && <Sidebar />}
+        {!isMobile && (
+          isLoadingSummary ? (
+            <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-4">ภาพรวม</h2>
+              <div className="space-y-2">
+                <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+                <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+                <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+              </div>
+            </aside>
+          ) : summary ? (
+            <Sidebar summary={summary} categories={categories} />
+          ) : (
+            <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
+              <h2 className="text-lg font-semibold text-foreground">ภาพรวม</h2>
+              <p className="text-sm text-muted-foreground">ไม่สามารถโหลดข้อมูลได้</p>
+            </aside>
+          )
+        )}
         
         <main className="flex-1 flex flex-col bg-background">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">

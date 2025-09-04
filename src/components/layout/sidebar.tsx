@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { useCategories } from "@/hooks/use-categories";
+import type { Category } from "../../../shared/schema";
 
 interface SummaryData {
   balance: number;
@@ -9,37 +8,12 @@ interface SummaryData {
   categoryBreakdown: { [category: string]: number };
 }
 
-export default function Sidebar() {
-  const { data: categories = [] } = useCategories();
-  
-  const { data: summary, isLoading } = useQuery<SummaryData>({
-    queryKey: ["/api/analytics/summary"],
-  });
+interface SidebarProps {
+  summary: SummaryData;
+  categories: Category[];
+}
 
-  // A simple loading state
-  if (isLoading) {
-    return (
-      <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">ภาพรวม</h2>
-        <div className="space-y-2">
-          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
-          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
-          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
-        </div>
-      </aside>
-    );
-  }
-
-  // Handle case where there is no summary data
-  if (!summary) {
-    return (
-      <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
-        <h2 className="text-lg font-semibold text-foreground">ภาพรวม</h2>
-        <p className="text-sm text-muted-foreground">ไม่สามารถโหลดข้อมูลได้</p>
-      </aside>
-    );
-  }
-
+export default function Sidebar({ summary, categories }: SidebarProps) {
   return (
     <aside className="w-80 bg-card border-r border-border flex flex-col">
       {/* Summary Cards */}
