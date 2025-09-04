@@ -24,6 +24,8 @@ export default function TransactionModal({ open, onOpenChange }: TransactionModa
   });
 
   const { data: categories = [] } = useCategories();
+  console.log("Categories from useCategories:", categories); // Add this line
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -74,6 +76,7 @@ export default function TransactionModal({ open, onOpenChange }: TransactionModa
   const filteredCategories = categories.filter(cat => 
     !formData.type || cat.type === formData.type
   );
+  console.log("Filtered Categories:", filteredCategories); // Add this line
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
