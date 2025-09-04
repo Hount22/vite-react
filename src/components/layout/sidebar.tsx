@@ -2,12 +2,43 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { useCategories } from "@/hooks/use-categories";
 
+interface SummaryData {
+  balance: number;
+  totalIncome: number;
+  totalExpenses: number;
+  categoryBreakdown: { [category: string]: number };
+}
+
 export default function Sidebar() {
   const { data: categories = [] } = useCategories();
   
-  const { data: summary } = useQuery({
+  const { data: summary, isLoading } = useQuery<SummaryData>({
     queryKey: ["/api/analytics/summary"],
   });
+
+  // A simple loading state
+  if (isLoading) {
+    return (
+      <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">ภาพรวม</h2>
+        <div className="space-y-2">
+          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+          <div className="h-16 bg-muted rounded-lg animate-pulse"></div>
+        </div>
+      </aside>
+    );
+  }
+
+  // Handle case where there is no summary data
+  if (!summary) {
+    return (
+      <aside className="w-80 bg-card border-r border-border flex flex-col p-6">
+        <h2 className="text-lg font-semibold text-foreground">ภาพรวม</h2>
+        <p className="text-sm text-muted-foreground">ไม่สามารถโหลดข้อมูลได้</p>
+      </aside>
+    );
+  }
 
   return (
     <aside className="w-80 bg-card border-r border-border flex flex-col">
@@ -20,11 +51,11 @@ export default function Sidebar() {
               <div>
                 <p className="text-sm text-muted-foreground">เดือนนี้</p>
                 <p className="text-2xl font-bold text-success" data-testid="text-monthly-balance">
-                  {summary?.balance >= 0 ? '+' : ''}฿{summary?.balance?.toLocaleString('th-TH', { minimumFractionDigits: 2 }) || '0.00'}
+                  {summary.balance >= 0 ? '+' : ''}฿{summary.balance.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
-                <i className={`fas ${summary?.balance >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'} text-success`}></i>
+                <i className={`fas ${summary.balance >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'} text-success`}></i>
               </div>
             </div>
           </Card>
@@ -34,7 +65,7 @@ export default function Sidebar() {
               <div>
                 <p className="text-sm text-muted-foreground">รายได้รวม</p>
                 <p className="text-xl font-semibold text-success" data-testid="text-total-income">
-                  ฿{summary?.totalIncome?.toLocaleString('th-TH', { minimumFractionDigits: 2 }) || '0.00'}
+                  ฿{summary.totalIncome.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div className="w-8 h-8 bg-success/10 rounded-full flex items-center justify-center">
@@ -48,7 +79,7 @@ export default function Sidebar() {
               <div>
                 <p className="text-sm text-muted-foreground">ค่าใช้จ่ายรวม</p>
                 <p className="text-xl font-semibold text-destructive" data-testid="text-total-expenses">
-                  -฿{summary?.totalExpenses?.toLocaleString('th-TH', { minimumFractionDigits: 2 }) || '0.00'}
+                  -฿{summary.totalExpenses.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
@@ -63,7 +94,7 @@ export default function Sidebar() {
       <div className="p-6 flex-1">
         <h3 className="text-md font-semibold text-foreground mb-4">หมวดหมู่</h3>
         <div className="space-y-2">
-          {Object.entries(summary?.categoryBreakdown || {}).map(([category, amount]) => {
+          {Object.entries(summary.categoryBreakdown).map(([category, amount]) => {
             const categoryData = categories.find(c => c.name === category);
             return (
               <div key={category} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer">

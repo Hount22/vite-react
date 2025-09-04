@@ -19,12 +19,43 @@ import {
   Legend
 } from "recharts";
 
+interface TaxBracket {
+  range: string;
+  rate: number;
+  amount: number;
+}
+
+interface MonthlyAverage {
+  grossIncome: number;
+  netIncome: number;
+  tax: number;
+  socialSecurity: number;
+}
+
+interface Deductions {
+  personal: number;
+  socialSecurity: number;
+  providentFund: number;
+}
+
+interface TaxData {
+  year: number;
+  annualIncome: number;
+  taxableIncome: number;
+  taxAmount: number;
+  socialSecurity: number;
+  netIncome: number;
+  monthlyAverage: MonthlyAverage;
+  taxBrackets: TaxBracket[];
+  deductions: Deductions;
+}
+
 export default function ReportsView() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
   
   // Fetch tax calculation data
-  const { data: taxData } = useQuery({
+  const { data: taxData } = useQuery<TaxData>({
     queryKey: ["/api/tax-calculation"],
   });
 

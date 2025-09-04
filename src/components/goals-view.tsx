@@ -9,6 +9,7 @@ import { useGoals } from "@/hooks/use-goals";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Goal } from "@shared/schema";
 
 export default function GoalsView() {
   const { data: goals = [] } = useGoals();
@@ -45,7 +46,7 @@ export default function GoalsView() {
   });
 
   const updateGoal = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<any> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Goal> }) => {
       return apiRequest("PUT", `/api/goals/${id}`, data);
     },
     onSuccess: () => {
@@ -214,7 +215,7 @@ export default function GoalsView() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {goals.map((goal) => {
           const progressPercentage = getProgressPercentage(goal.currentAmount, goal.targetAmount);
-          const timeRemaining = getTimeRemaining(goal.deadline);
+          const timeRemaining = goal.deadline ? getTimeRemaining(goal.deadline) : "No deadline set";
           
           return (
             <Card key={goal.id} className="relative" data-testid={`goal-card-${goal.title.toLowerCase().replace(/ /g, '-')}`}>
