@@ -132,7 +132,6 @@ export default function TransactionModal({ open, onOpenChange }: TransactionModa
                 value={formData.category} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                 required
-                disabled={!formData.type}
               >
                 <SelectTrigger data-testid="select-transaction-category">
                   <SelectValue placeholder="เลือกหมวดหมู่" />
